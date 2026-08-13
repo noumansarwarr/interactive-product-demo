@@ -1,0 +1,295 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Demo scene: camera, spotlight, cursor.
+   Copy per scene as a CSS module and REPLACE THE `ns` PREFIX with a token
+   unique to this scene (ns -> leave, ats, payroll…).
+
+   @property registration is GLOBAL and first-registration-wins. Two scenes
+   registering `--fx` with different initial values silently corrupt each
+   other's spotlight, and the failure only shows when both are on the page.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Registered so the spotlight geometry INTERPOLATES. Without @property these
+   are unanimatable custom properties and the focus snaps between targets. */
+@property --nsfx {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+@property --nsfy {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+@property --nsfrx {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 420px;
+}
+@property --nsfry {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 320px;
+}
+@property --nsdimx {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 1090px;
+}
+@property --nsdimy {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 830px;
+}
+
+/* ── Stage ─────────────────────────────────────────────────────────────── */
+
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  container-type: inline-size;
+  background: #0b1220;
+  outline: none;
+  /* Behave like a video surface, not like a document. */
+  user-select: none;
+  -webkit-user-select: none;
+
+  --e: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Keep in step with the cursor's travel; the light should arrive with it. */
+  transition:
+    --nsfx 800ms var(--e),
+    --nsfy 800ms var(--e),
+    --nsfrx 800ms var(--e),
+    --nsfry 800ms var(--e),
+    --nsdimx 800ms var(--e),
+    --nsdimy 800ms var(--e);
+}
+
+/* ── Camera: the fixed-size frame the scene is authored in ─────────────── */
+
+.camera {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1400px; /* == frameWidth passed to useSceneCamera */
+  height: 900px; /* == frameHeight */
+  transform-origin: 0 0;
+  /* The replica is a picture, not a UI — a stray hover must not fire a real
+     component's tooltip, which portals to <body> and lands off-stage. */
+  pointer-events: none;
+  transition: transform 880ms var(--e);
+}
+
+/* Promoted only while this scene is the one playing: a permanent layer per
+   scene parks N stage-sized layers in memory for the one that moves. */
+.scene[data-live] .camera {
+  will-change: transform;
+}
+
+/* ── Spotlight ─────────────────────────────────────────────────────────────
+   Two layers: `.dim` (a cheap radial vignette) and `.blur` (a masked
+   backdrop-filter). START WITH `.dim` ALONE. The blur is one stage-sized
+   backdrop-filter per scene, it is the most expensive thing on the page, and
+   in practice the vignette plus the camera push-in already carries the focus —
+   ship the blur only if you can show it earns its cost. */
+
+.blur,
+.dim {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition:
+    opacity 440ms ease,
+    visibility 0s linear 440ms;
+}
+
+.scene[data-focus] .blur,
+.scene[data-focus] .dim {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 440ms ease,
+    visibility 0s;
+}
+
+.blur {
+  z-index: 5;
+  backdrop-filter: blur(7px) saturate(0.82) contrast(0.97);
+  -webkit-backdrop-filter: blur(7px) saturate(0.82) contrast(0.97);
+  /* The radii MUST resolve to a plain <length>. min()/calc(min()) is invalid
+     in this slot and silently drops mask-image to `none` — which un-masks the
+     blur over the whole stage. Clamp in JS, not here. */
+  -webkit-mask-image: radial-gradient(
+    ellipse var(--nsfrx) var(--nsfry) at var(--nsfx) var(--nsfy),
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0) 65%,
+    #000 100%
+  );
+  mask-image: radial-gradient(
+    ellipse var(--nsfrx) var(--nsfry) at var(--nsfx) var(--nsfy),
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0) 65%,
+    #000 100%
+  );
+}
+
+.dim {
+  z-index: 6;
+  background: radial-gradient(
+    ellipse var(--nsdimx) var(--nsdimy) at var(--nsfx) var(--nsfy),
+    rgba(10, 16, 30, 0) 0%,
+    rgba(10, 16, 30, 0) 42%,
+    rgba(10, 16, 30, 0.14) 100%
+  );
+}
+
+/* Invisible marker pinned over a control the scene does not own. */
+.spot {
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* Idle beacon: draws the eye to the next control BEFORE the cursor sets off,
+   so the click reads as deliberate instead of random. Point it at the beat
+   that precedes the action (data-beat='<previous beat id>'). */
+.scene[data-live][data-beat='ready'] .spot[data-tour-target='primary']::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border: 2px solid rgba(20, 184, 166, 0.85);
+  border-radius: 9px;
+  opacity: 0; /* transparent by default, so it stays gone when suppressed */
+  animation: seek 2200ms ease-out infinite;
+}
+
+@keyframes seek {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ── Cursor ────────────────────────────────────────────────────────────── */
+
+.cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 8;
+  width: clamp(21px, 2.1cqw, 31px);
+  height: clamp(21px, 2.1cqw, 31px);
+  opacity: 0;
+  pointer-events: none;
+  /* Shorter than the beat's travel on purpose: the pointer settles on the
+     control, then presses. Arriving exactly on the press reads as a lunge. */
+  transition:
+    transform 800ms var(--e),
+    opacity 260ms ease;
+  will-change: transform;
+}
+
+.cursor[data-show] {
+  opacity: 1;
+}
+
+.cursor svg {
+  width: 100%;
+  height: 100%;
+  fill: #fff;
+  filter: drop-shadow(0 2px 5px rgba(8, 12, 24, 0.45));
+  transition: transform 140ms var(--e);
+}
+
+.cursor[data-press] svg {
+  transform: translate(-12%, -12%) scale(0.8);
+}
+
+/* Ripple */
+.cursor i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.34);
+  opacity: 0;
+}
+
+.cursor[data-press] i {
+  animation: click 560ms ease-out both;
+}
+
+@keyframes click {
+  0% {
+    opacity: 0.85;
+    transform: scale(0.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+/* ── Replayed control states ───────────────────────────────────────────────
+   The cursor never really touches anything, so the control has to react on
+   its own or the click reads as landing on a dead pixel. Drive from the beat
+   id + phase on the scene root. Address shared components by their aria-label
+   rather than editing them to carry a marketing class. */
+
+.scene [data-tour-target],
+.scene [aria-label='Primary action'] {
+  transition:
+    transform 140ms var(--e),
+    box-shadow 180ms var(--e),
+    filter 180ms var(--e);
+}
+
+.scene[data-beat='act'] [aria-label='Primary action'] {
+  box-shadow: 0 6px 14px -3px rgba(16, 185, 129, 0.5);
+  filter: brightness(1.05);
+}
+
+.scene[data-beat='act'][data-phase='press'] [aria-label='Primary action'] {
+  transform: scale(0.97);
+}
+
+/* ── Degradation ───────────────────────────────────────────────────────── */
+
+/* Two stage-sized backdrop-filter layers are the most expensive thing here.
+   Below this width the frame is already cropped and panned to the target, so
+   the blur is buying little. */
+@media (max-width: 640px) {
+  .blur {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene *,
+  .scene *::before,
+  .scene *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .blur,
+  .dim,
+  .cursor {
+    display: none;
+  }
+}
