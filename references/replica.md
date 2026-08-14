@@ -13,6 +13,20 @@ feed them fixtures.
 | Data | **Fixtures typed with the real API response types.** The compiler then tells you when the product moved. |
 | Actions | `noop`. Nothing in a scene may mutate. |
 
+### Rebuilding the shell is not licence to simplify it
+
+"Rebuild" means skipping auth, routing and stores. It does not mean an approximation.
+Open the real screen and copy it: the same nav items in the same order, the same
+active state, the same breadcrumb depth, the same header controls, the same spacing.
+
+The things that get dropped when the shell is rebuilt from memory, and that are always
+noticed: secondary nav, the search field, the notification bell, the user avatar and
+its label, count badges, and whatever is pinned to the bottom of the sidebar.
+
+If the scene should differ from the product — a highlight the real UI does not have, a
+simplified sidebar, invented flair — that is the user's call and it belongs in the
+brief. Anything not in the brief matches the product.
+
 The shell is where you plant permanent tour targets (`data-tour-target="nav-people"`)
 because you own it. For controls inside imported components, use `useSpotMarker` with
 a selector — usually the accessible name — rather than editing a shared component to
@@ -90,13 +104,58 @@ frame instead of triggering the real one.
 *behind* that background and it vanishes. Give the stage `z-index: 0` and lift content
 with `position: relative; z-index: 1` instead of pushing decoration negative.
 
+## The browser frame
+
+Optional, and decided in the brief. A top bar with a tab and the product's real URL
+buys "a real page someone is actually using" for around 60px of frame height. Worth
+drawing for a flat scene; usually wasted under a zoom camera, which crops it out of
+shot for most of the loop.
+
+If it is in:
+
+- **Use the real URL, on the route the scene is showing.** A queue screen with a
+  generic `app.example.com` in the bar reads as a placeholder, which is the opposite
+  of what the bar is there to do.
+- **Draw it, do not screenshot it.** A captured browser bar re-introduces the media
+  payload this whole approach exists to avoid, and it will be the wrong OS for most
+  of the people looking at it.
+- **Match a real browser's proportions.** This is the same argument as the cursor: a
+  bar with invented spacing reads as a drawing of a browser, and the viewer clocks it
+  without being able to say why. Working numbers for a macOS-style bar, at the frame's
+  authored scale:
+  - Bar height 40–44px, with the page content starting immediately below it.
+  - Three traffic lights, 12px across, 8px apart, the first one inset **12–16px from
+    the left edge**. Flush against the edge is the giveaway.
+  - The address pill **centred in the bar**, not butted up against the lights. Width
+    around 40–55% of the bar, height 26–28px, fully rounded, one step off the bar's
+    own background rather than a hard border.
+  - Nothing else. No tab strip, no bookmarks bar, no extension icons: they add width
+    that has to come off the product, and every one of them is another proportion to
+    get wrong.
+- **Keep it dead.** No traffic lights that look pressable, no tab that looks
+  switchable, `aria-hidden` on the whole bar. It is set dressing; the scene's one
+  `aria-label` already says what is happening.
+- **Budget its height out of the content, not into a taller frame.** It comes off the
+  top of the same fixed frame, so it costs rows. Growing the frame instead means a
+  smaller scale at every width.
+- **Expect it to be off screen on a phone.** The narrow-stage ramp pushes past it on
+  every targeted beat, so it earns its height on desktop and is invisible where the
+  frame is tightest. That is another reason it belongs to flat scenes.
+
 ## Sizing the frame
 
-Author at fixed pixels chosen from the real screen. Then budget:
+One frame, authored at fixed pixels chosen from the real screen. There is no narrow
+variant to build: the camera fits and ramps the same frame at every width. Budget:
 
-- The frame cannot scroll. Anything that does not fit is a clipped row. Count the
-  header, filters, toolbar, and rows before adding one more.
-- Make the frame *wider* than the stage's aspect ratio if width is the thing that must
-  survive (tables). `cover` then crops top and bottom, which is the cheap dimension.
+- The frame cannot scroll, so size it to hold the whole screen. If the content does
+  not fit, cut a **row of data** or shorten the story — never a piece of the UI. The
+  chrome, the toolbar, and the column set are the product; fixture rows are filler.
+- **Match the frame's aspect to the measured stage**, before choosing any dimension.
+  The difference between the two aspects is either a crop or a pair of dead bars,
+  depending on the fit, and there is no third option. Measure the real slot; if its
+  shape is wrong for the screen, pin its `aspect-ratio` in CSS instead of authoring
+  around it.
 - App spacing may need trimming by a few px to fit; note the budget in a comment so
-  the next edit knows it is tight.
+  the next edit knows it is tight. Trimming spacing is fine. Removing elements is not.
+- A taller frame is a smaller scale at every width, phones included. Adding a row is
+  never free.

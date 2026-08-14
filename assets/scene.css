@@ -57,6 +57,12 @@
 
   --e: cubic-bezier(0.22, 1, 0.36, 1);
 
+  /* Both ripple layers are drawn in this colour. The default is tuned for a
+     dark replica; on a light product UI restate it here as something like
+     rgba(15, 23, 42, 0.3), or the press is white on white and the click reads
+     as landing on a dead pixel. */
+  --ripple: rgba(255, 255, 255, 0.34);
+
   /* Keep in step with the cursor's travel; the light should arrive with it. */
   transition:
     --nsfx 800ms var(--e),
@@ -88,12 +94,18 @@
   will-change: transform;
 }
 
-/* ── Spotlight ─────────────────────────────────────────────────────────────
-   Two layers: `.dim` (a cheap radial vignette) and `.blur` (a masked
-   backdrop-filter). START WITH `.dim` ALONE. The blur is one stage-sized
-   backdrop-filter per scene, it is the most expensive thing on the page, and
-   in practice the vignette plus the camera push-in already carries the focus —
-   ship the blur only if you can show it earns its cost. */
+/* ── Spotlight: OPT-IN, and off by default ─────────────────────────────────
+   The default scene has NO spotlight. Not the `.dim` vignette, not the `.blur`
+   backdrop-filter. It shows the page. The camera's push-in and the beacon
+   already direct the eye, and dimming or blurring the product you are trying
+   to sell works against the one job the scene has.
+
+   The rules below stay because a scene occasionally earns one: a dense screen
+   where the acting control genuinely cannot be found. To switch one on, render
+   the element in the scene and add back the `--nsf*` custom properties and the
+   `data-focus` attribute the template drops (see scene-template.tsx). `.blur`
+   additionally costs one stage-sized backdrop-filter, the most expensive thing
+   on the page; prefer `.dim` if you need anything at all. */
 
 .blur,
 .dim {
@@ -205,10 +217,18 @@
   opacity: 1;
 }
 
+/* White fill with a dark outline drawn UNDER it (`paint-order: stroke fill`),
+   the way an OS pointer is built. A drop-shadow alone is not enough: the cursor
+   spends most of its life over white cards and light controls, where a pure
+   white arrow disappears into the surface it is meant to be pointing at. */
 .cursor svg {
   width: 100%;
   height: 100%;
   fill: #fff;
+  stroke: rgba(9, 13, 25, 0.92);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  paint-order: stroke fill;
   filter: drop-shadow(0 2px 5px rgba(8, 12, 24, 0.45));
   transition: transform 140ms var(--e);
 }
@@ -217,7 +237,18 @@
   transform: translate(-12%, -12%) scale(0.8);
 }
 
-/* Ripple */
+/* ── Ripple ────────────────────────────────────────────────────────────────
+   Two layers: a quick contact flash inside a slower expanding ring. The flash
+   marks the instant of contact, the ring carries it long enough to register on
+   a small screen. A single disc reads as a smudge; the ring is what makes it
+   read as a click.
+
+   Both are drawn in `--ripple` — set that per scene, see `.scene` above. */
+
+/* A static anchor box, and it must stay static. Animating `i` itself would
+   multiply its transform AND its opacity into both layers below, so the ring
+   would compound its scale and then vanish the instant the flash finished
+   fading — a parent at opacity 0 takes its children with it. */
 .cursor i {
   position: absolute;
   left: 50%;
@@ -225,23 +256,58 @@
   width: 34px;
   height: 34px;
   margin: -17px 0 0 -17px;
+}
+
+.cursor i::before,
+.cursor i::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.34);
   opacity: 0;
 }
 
-.cursor[data-press] i {
-  animation: click 560ms ease-out both;
+.cursor i::before {
+  background: var(--ripple);
 }
 
-@keyframes click {
+.cursor i::after {
+  border: 2px solid var(--ripple);
+}
+
+/* `data-press` is removed during the next beat's travel, which is what restarts
+   both animations. Keep it that way: an attribute that stays put across two
+   consecutive action beats fires the ripple once and never again. */
+.cursor[data-press] i::before {
+  animation: flash 340ms ease-out both;
+}
+
+.cursor[data-press] i::after {
+  animation: ring 560ms ease-out both;
+}
+
+@keyframes flash {
   0% {
-    opacity: 0.85;
+    opacity: 0.9;
     transform: scale(0.2);
   }
   100% {
     opacity: 0;
-    transform: scale(1.9);
+    transform: scale(1.25);
+  }
+}
+
+@keyframes ring {
+  0% {
+    opacity: 0.75;
+    transform: scale(0.35);
+  }
+  70% {
+    opacity: 0.25;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.1);
   }
 }
 
@@ -270,9 +336,15 @@
 
 /* ── Degradation ───────────────────────────────────────────────────────── */
 
-/* Two stage-sized backdrop-filter layers are the most expensive thing here.
-   Below this width the frame is already cropped and panned to the target, so
-   the blur is buying little. */
+/* ── Narrow viewports ──────────────────────────────────────────────────────
+   Almost nothing belongs here. The camera ramps its own push-in as the stage
+   shrinks and a beat's `push` tunes it, so the composition is decided in JS
+   where it can be measured — a CSS breakpoint on top would fight it and would
+   snap where the ramp is continuous.
+
+   The one saving worth taking: drop the blur, if this scene opted into it at
+   all. Two stage-sized backdrop-filter layers are the most expensive thing on
+   the page, and at this width the frame is already pushed in on its target. */
 @media (max-width: 640px) {
   .blur {
     display: none;

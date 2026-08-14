@@ -36,7 +36,7 @@ directly with `/interactive-product-demo`.
 ## Contents
 
 ```
-SKILL.md                      the workflow, the five invariants, the ship gate
+SKILL.md                      the workflow, the seven invariants, the ship gate
 references/
   architecture.md             layer model, camera math, state derivation, activity gating
   replica.md                  reusing real app components on a marketing page
@@ -46,7 +46,7 @@ references/
 assets/
   use-scene-beats.ts          travel → press → done, with pause/resume banking
   use-scene-active.ts         the one true "is anyone watching" signal
-  use-scene-camera.ts         fit/cover, damped pan, target measurement, spot markers
+  use-scene-camera.ts         fit/cover, narrow-stage ramp, damped pan, spot markers
   use-typed-text.ts           character/line reveal for chat and console output
   scene.css                   spotlight, cursor, press ripple, degradation
   scene-template.tsx          a complete wired skeleton
@@ -57,13 +57,16 @@ framework-agnostic; the whole contract between JS and CSS is a handful of data
 attributes and custom properties on one root element, so a Vue/Svelte/vanilla port
 only replaces the scheduling.
 
-## The five invariants
+## The seven invariants
 
 1. The click lands **before** the state it causes.
 2. Keep the meaningful object mounted; change its state and geometry.
 3. Nothing animates off screen.
 4. Measure real targets; never hard-code coordinates.
-5. The cursor touches nothing, so replay the control's own hover and press states.
+5. The cursor is a real object: it replays the control's states, and it is continuous
+   in space and time.
+6. The scene must still read when the text does not.
+7. The frame fills its stage, whole: never sliced, never letterboxed.
 
 ## License
 

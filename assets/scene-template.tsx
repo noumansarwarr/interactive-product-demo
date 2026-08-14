@@ -14,9 +14,11 @@ import { useSceneActive } from './use-scene-active';
 import { useSceneBeats, type SceneBeat } from './use-scene-beats';
 import { useSceneCamera, useSpotMarker } from './use-scene-camera';
 
-// Authored frame size. Pick it from the real screen: wide enough that the
-// content which must stay legible fits without scrolling. `cover` crops the
-// edges on narrow viewports, so put nothing load-bearing at the top/bottom.
+// Authored frame size. Pick it from the real screen: big enough to hold the
+// WHOLE screen, chrome included, without scrolling. Keep its aspect close to the
+// stage's — under `fit: 'cover'` the gap between the two aspects is the crop, and
+// it comes off the top, which is where the navbar is. If the chrome must always
+// be in shot, use `fit: 'contain'` instead and let it letterbox.
 const FRAME = { height: 900, width: 1400 };
 
 // Targets. Prefer a literal `data-tour-target` in your own markup; use
@@ -28,25 +30,35 @@ const PRIMARY = 'primary';
 // the click changed. `travel` is the cursor's crossing time; keep it in step
 // with the cursor's CSS transition.
 const BEATS: readonly SceneBeat[] = [
-  { hold: 1000, id: 'establish' },
-  { hold: 900, id: 'ready' }, // idle beacon plays here
+  // `push: 0` on every wide beat: contain fit at all widths, nothing clipped.
+  // Without it these inherit `cover` and the stage's aspect ratio decides how
+  // much of the navbar the viewer gets, which is exactly the wrong thing to
+  // leave to chance.
+  { hold: 1000, id: 'establish', push: 0 },
+  { hold: 900, id: 'ready', push: 0 }, // idle beacon plays here
   { hold: 520, id: 'act', target: PRIMARY, travel: 900, zoom: 1.12 },
-  { hold: 2400, id: 'result' },
+  // The payoff pulls back. Note the difference from a *read* hold immediately
+  // after a click: that one stays pushed in, so the viewer sees what changed
+  // where it changed. Only the closing beat goes wide again.
+  { hold: 2400, id: 'result', push: 0 },
 ];
 
 // Which beat INDEX commits which state. Read as "state X is true once beat
 // AT.x has finished". Keeping this as one map is what makes the story legible.
 const AT = { act: 2 } as const;
 
-// Spotlight geometry. The gradient radii are half-extents and the mask is only
-// fully clear out to PLATEAU of the radius, so the focused control plus its
-// padding has to fit inside that. Capped here because min()/calc() is invalid
-// in a radial-gradient radius slot (see scene.css).
-const PLATEAU = 0.65;
-const DIM = 2.6;
-const PAD = { x: 92, y: 68 };
-const focusRadius = (size: number, pad: number, cap: number) =>
-  Math.min(cap, Math.max(pad * 2, (size / 2 + pad) / PLATEAU));
+// The cursor enters once and leaves once. Between these two beats it is on
+// stage continuously, including through every hold: a pointer that blinks out
+// while nothing is being clicked and reappears somewhere else is the single
+// fastest way to make a scene read as a fake.
+const FIRST_ACTION = BEATS.findIndex((b) => b.target);
+const LAST_ACTION = BEATS.map((b) => Boolean(b.target)).lastIndexOf(true);
+
+// No spotlight. The default scene shows the page, full stop: the camera's
+// push-in and the beacon already say where to look, and dimming a product you
+// are trying to sell is a strange thing to do. Both spotlight layers (`.dim`
+// vignette and `.blur`) are opt-in — scene.css has the rules and what to add
+// back if a particular scene genuinely needs one.
 
 // A control inside a shared component, addressed by its accessible name.
 const PRIMARY_AT = '[aria-label="Primary action"]';
@@ -78,45 +90,49 @@ export function DemoScene() {
   const done = phase === 'done' ? index : index - 1;
   // Reduced motion skips the walkthrough and renders where the story ends.
   const acted = reduced || done >= AT.act;
-  const pressing = !reduced && !!beat.target && !beat.quiet;
+  // Two separate questions. `onStage` is "is the pointer in the room" and spans
+  // the whole walkthrough. `acting` is "is it pressing something right now".
+  // Driving visibility off `acting` is what makes a cursor teleport.
+  const onStage =
+    !reduced && index >= FIRST_ACTION && index <= LAST_ACTION && FIRST_ACTION >= 0;
+  const acting = !reduced && !!beat.target && !beat.quiet;
 
-  const primarySpot = useSpotMarker(frameRef, PRIMARY_AT, String(live));
+  // The key must change whenever the marked control moves, mounts or unmounts —
+  // list every scene state that shifts it, not just `live`, or the marker keeps
+  // covering where the control used to be.
+  const primarySpot = useSpotMarker(frameRef, PRIMARY_AT, `${live}:${acted}`);
 
+  // Narrow stages need no configuration here: the camera ramps its own push-in
+  // as the stage gets smaller. `push` is the per-beat lever over that — 0 for a
+  // beat that must show the whole screen, >1 for one that must be *read* on a
+  // phone — and it does nothing on a stage wide enough to fit the scene.
+  //
+  // This template pushes in and pans. For a flat scene pass `pan: false` and
+  // `zoom: 1`; the cursor needs no changes either way. See authoring.md.
   const camera = useSceneCamera({
     fit: 'cover',
     frameHeight: FRAME.height,
     frameRef,
     frameWidth: FRAME.width,
+    // Re-measure when frame content moves; the frame is a fixed size, so no
+    // observer can detect this on its own.
+    key: String(acted),
     panStrength: 0.85,
+    push: beat.push,
     target: reduced ? undefined : beat.target,
     viewportRef,
     zoom: reduced ? 1 : (beat.zoom ?? 1),
   });
-
-  const focused = !reduced && camera.hasTarget;
-  const fx = focusRadius(camera.focusW, PAD.x, camera.viewW * 0.46);
-  const fy = focusRadius(camera.focusH, PAD.y, camera.viewH * 0.5);
 
   return (
     <div
       ref={viewportRef}
       className={styles.scene}
       data-beat={beat.id}
-      data-focus={focused ? '' : undefined}
       data-live={live ? '' : undefined}
       data-phase={phase}
       role="img"
       aria-label="One sentence naming the person, the task, and the outcome."
-      style={
-        {
-          '--nsfx': `${camera.cursorX}px`,
-          '--nsfy': `${camera.cursorY}px`,
-          '--nsfrx': `${fx}px`,
-          '--nsfry': `${fy}px`,
-          '--nsdimx': `${fx * DIM}px`,
-          '--nsdimy': `${fy * DIM}px`,
-        } as React.CSSProperties
-      }
     >
       <div
         ref={frameRef}
@@ -125,7 +141,8 @@ export function DemoScene() {
           transform: `translate3d(${camera.x}px, ${camera.y}px, 0) scale(${camera.scale})`,
         }}
       >
-        {/* The replica: your app's real chrome + real page components + fixtures.
+        {/* The replica: the browser bar if the brief asked for one, then your
+            app's real chrome, real page components, and fixtures.
             Pass plain booleans; never let a child own scene state. */}
         <Screen acted={acted} />
 
@@ -139,13 +156,13 @@ export function DemoScene() {
         )}
       </div>
 
-      <span className={styles.blur} aria-hidden="true" />
-      <span className={styles.dim} aria-hidden="true" />
+      {/* No spotlight layers here on purpose. See scene.css if a scene needs
+          one; it also needs the --nsf* vars and data-focus adding back. */}
 
       <span
         className={styles.cursor}
-        data-press={pressing && phase !== 'travel' ? '' : undefined}
-        data-show={pressing ? '' : undefined}
+        data-press={acting && phase !== 'travel' ? '' : undefined}
+        data-show={onStage ? '' : undefined}
         style={{
           transform: `translate3d(${camera.cursorX}px, ${camera.cursorY}px, 0)`,
         }}

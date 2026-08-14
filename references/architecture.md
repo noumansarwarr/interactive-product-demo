@@ -22,10 +22,10 @@ No drawing loop, no per-frame style writes on a large tree.
 ```
 .scene                      viewport, container-type: inline-size, holds all state attrs
 ├── .camera                 the fixed 1400×900 frame; translate3d + scale; pointer-events: none
-│   ├── <Replica>           app chrome + REAL page components + fixtures
+│   ├── <Replica>           optional browser bar + app chrome + REAL page components
 │   └── .spot ×n            invisible markers pinned over controls you don't own
-├── .blur                   backdrop-filter, radial mask punches a hole at the target
-├── .dim                    radial vignette, same centre
+├── .blur                   OPT-IN, not rendered by default: masked backdrop-filter
+├── .dim                    radial vignette, same centre — the default spotlight
 └── .cursor                 translate3d to the target's centre + press ripple
 ```
 
@@ -71,6 +71,28 @@ resizes, and pans toward the current target.
 - Pan is clamped to the frame edges, and falls back to centred whenever the scaled
   frame is smaller than the viewport in that axis — otherwise a small frame gets
   pinned to the top-left.
+- **A flat scene** sets `pan: false` and holds `zoom` at 1, so the frame never moves.
+  `cursorX`/`cursorY` still come out of the same target measurement, which is why the
+  cursor needs no changes; the spotlight does have to be gated off separately, since
+  `hasTarget` is still true. See `references/authoring.md`.
+- **The narrow-stage ramp** is the whole of the responsive behaviour. `pushIn(width)`
+  multiplies the fitted scale as the stage drops below 640px, capped at 1.55, and is
+  exactly 1 on any stage wide enough to fit the scene. It ramps *continuously* rather
+  than snapping at a breakpoint, so resizing never shows a lurch. A beat's `push`
+  multiplies it, and values above 1 only apply where the ramp is already active, so a
+  phone-tuned beat cannot zoom the desktop composition.
+- **`push: 0` short-circuits all of it to the contain fit**, at every width. It is not
+  a hint or a floor, it is the guarantee that a wide beat shows the whole screen with
+  nothing clipped. This is why it is checked before the ramp rather than folded into
+  it: a beat that says "show the product" must not be at the mercy of the stage's
+  aspect ratio, and a sliced navbar reads as a broken page rather than as a shot.
+- **Wide targets aim at their leading edge.** A target bigger than the visible window
+  cannot be centred without showing only its middle — for a search field that is the
+  empty half, past the text. The camera aims at the leading slice instead and forces
+  pan strength to 1 on that axis, since the point is that the target's *start* is on
+  screen. Untargeted beats are exempt, or the frame would pin to its top-left.
+- `measure()` bails out of `setState` when no value changed, which keeps a resize
+  storm from re-rendering the whole replica for a sub-pixel change.
 
 ### Why `spotIn` walks offsetParents
 
