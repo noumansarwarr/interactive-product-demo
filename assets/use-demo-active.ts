@@ -11,22 +11,22 @@ interface ActiveOptions {
 }
 
 /**
- * Whether a scene may animate: it is on screen, it is the panel currently being
+ * Whether a demo may animate: it is on screen, it is the panel currently being
  * shown, and the tab is visible.
  *
  * Why not IntersectionObserver alone: a deck that keeps all panels mounted and
  * hides the inactive ones with `visibility`/`opacity` still reports every one of
- * them as intersecting, so every scene keeps burning timers off screen. The
+ * them as intersecting, so every demo keeps burning timers off screen. The
  * deck's own "this panel is live" class is the real signal.
  *
  * Fallback: when no panel/deck exists, or the deck's driver has stood down (the
  * stacked mobile layout, or reduced motion), no panel carries `liveClass` and
  * intersection decides on its own.
  */
-export function useSceneActive(
+export function useDemoActive(
   ref: React.RefObject<HTMLElement | null>,
   {
-    panelAttr = 'data-scene-panel',
+    panelAttr = 'data-demo-panel',
     liveClass = 'is-live',
     threshold = 0.35,
   }: ActiveOptions = {},

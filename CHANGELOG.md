@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.3.0
+
+Renamed. The skill is **interactive product demo**, and the code now says so — "scene"
+survived only as an internal word that no longer matched anything the user reads.
+Entries below this one keep the names they shipped under.
+
+- **`scene` → `demo` across every identifier, filename and doc.** Nothing about the
+  mechanism changed; this is a rename and only a rename.
+
+  | Before | After |
+  | --- | --- |
+  | `use-scene-beats.ts` · `useSceneBeats` | `use-demo-beats.ts` · `useDemoBeats` |
+  | `use-scene-active.ts` · `useSceneActive` | `use-demo-active.ts` · `useDemoActive` |
+  | `use-scene-camera.ts` · `useSceneCamera` | `use-demo-camera.ts` · `useDemoCamera` |
+  | `SceneBeat` · `SceneProps` | `DemoBeat` · `DemoProps` |
+  | `scene.css` · `scene.module.css` | `demo.css` · `demo.module.css` |
+  | `scene-template.tsx` · `DemoScene()` | `demo-template.tsx` · `InteractiveProductDemo()` |
+  | `.scene` | `.demo` |
+  | `data-tour-target` | `data-demo-target` |
+  | `data-scene-panel` | `data-demo-panel` |
+
+  `useSpotMarker`, `BeatPhase`, `use-typed-text.ts`, the `--ns*` custom-property prefix
+  and every `.camera` / `.spot` / `.dim` / `.blur` class are unchanged. Existing scenes
+  keep working until you rename them; nothing reads the old names at runtime.
+
+- **README rewritten for public use.** It described the skill but never showed anyone
+  using it. It now walks the actual flow — what you type, the questions you get asked,
+  the brief you confirm, the beat script you confirm, what lands in your codebase —
+  plus requirements, a tuning table, and troubleshooting. The install snippet points at
+  a real clone URL instead of `<you>`.
+
 ## 0.2.0
 
 Two things the workflow let slip: it inferred the brief instead of asking for it, and

@@ -21,13 +21,13 @@
 - [ ] Page content uses the product's real components, not hand-built mocks.
 - [ ] Fixtures are typed with the real API response types.
 - [ ] Optional fields that get compared are explicitly `null`, not absent.
-- [ ] The scene respects the product's own guard rules (what is actionable).
+- [ ] The demo respects the product's own guard rules (what is actionable).
 - [ ] The browser frame was offered to the user as a choice, and the brief records
       their answer rather than a decision made on their behalf.
 - [ ] A browser frame, if the brief asked for one, shows the product's real URL for
       this route, is drawn rather than screenshotted, and is `aria-hidden`.
-- [ ] Placeholder names are consistent with sibling scenes.
-- [ ] Nothing in the scene can mutate anything; all handlers are `noop`.
+- [ ] Placeholder names are consistent with sibling demos.
+- [ ] Nothing in the demo can mutate anything; all handlers are `noop`.
 
 ## Motion
 
@@ -51,11 +51,11 @@
 ## Lifecycle
 
 - [ ] No timer, observer, or rAF survives unmount.
-- [ ] Nothing animates while the scene is off screen, hidden by its deck, or the tab
+- [ ] Nothing animates while the demo is off screen, hidden by its deck, or the tab
       is backgrounded.
-- [ ] `will-change` is applied only while the scene is live.
+- [ ] `will-change` is applied only while the demo is live.
 - [ ] No spotlight layers are rendered — neither `.dim` nor `.blur` — unless this
-      scene specifically justified one. The default is to show the page.
+      demo specifically justified one. The default is to show the page.
 - [ ] Fast scrolling across the whole section leaves no stale cursor, menu, or toast.
 
 ## Responsive
@@ -77,18 +77,18 @@
 
 ## Accessibility
 
-- [ ] `role="img"` + `aria-label` on the scene root.
+- [ ] `role="img"` + `aria-label` on the demo root.
 - [ ] Cursor, spotlight, dim, beacons, decorative SVG all `aria-hidden`.
 - [ ] With `prefers-reduced-motion: reduce`: end state rendered, no cursor, no camera,
       no spotlight — and it still communicates the outcome on its own.
 - [ ] Reduced motion handled in **both** JS and CSS.
-- [ ] No keyboard focus lands inside the scene.
+- [ ] No keyboard focus lands inside the demo.
 - [ ] Surrounding headings, copy, and CTAs remain normal selectable document text.
 
 ## Gate
 
 - [ ] The project's formatter, linter, and type-check all pass.
 - [ ] The diff was read.
-- [ ] The scene was seen running in a browser, at more than one width, with the tool
+- [ ] The demo was seen running in a browser, at more than one width, with the tool
       the user named or chose. The visual items above were verified by looking, not
       inferred from the code.

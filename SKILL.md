@@ -1,16 +1,17 @@
 ---
 name: interactive-product-demo
 description: >-
-  Record a product demo as a live DOM/CSS scene instead of a video or GIF: a replica of the
+  Build a product demo out of live DOM and CSS instead of a video or GIF: a replica of the
   real UI, a scripted cursor, a camera that pans and spotlights each control, and a beat
-  engine that runs only while the scene is on screen. Use when building a hero animation,
+  engine that runs only while the demo is on screen. Use when building a hero animation,
   product showcase, landing-page demo, feature walkthrough, animated screenshot, onboarding
   tour replay, or when replacing a screen recording / Loom / GIF on a marketing page.
   Triggers: "animate the product", "show the product in action", "showcase scene",
-  "hero animation", "scripted cursor demo", "demo without recording a video".
+  "interactive product demo", "hero animation", "scripted cursor demo",
+  "demo without recording a video".
 ---
 
-# Demo Scene
+# Interactive Product Demo
 
 Build a product demo out of real DOM, real components, and CSS transitions. A scripted
 cursor walks through a replica of the actual app while a camera pans and spotlights the
@@ -28,33 +29,33 @@ does not go stale the day the UI changes.
 
 ## The seven invariants
 
-Violate these and the scene reads as broken, not as a product.
+Violate these and the demo reads as broken, not as a product.
 
-1. **The click lands before the state it causes.** Derive scene state from *committed*
+1. **The click lands before the state it causes.** Derive demo state from *committed*
    beats (`done = phase === 'done' ? index : index - 1`), never from the current index. If
    the table updates while the cursor is still travelling, the demo looks like a slideshow.
 2. **Keep the meaningful object mounted.** Change its state, geometry, and surroundings.
    Never cross-fade two copies of the same thing.
-3. **Nothing animates off screen.** A scene that is mounted but not being watched must have
+3. **Nothing animates off screen.** A demo that is mounted but not being watched must have
    zero pending timers. Visibility gating is a correctness requirement, not an optimization.
 4. **Measure real targets; never hard-code coordinates.** The cursor follows a
-   `[data-tour-target]` node measured in unscaled frame space.
+   `[data-demo-target]` node measured in unscaled frame space.
 5. **The cursor is a real object, or the story is a fake.** Two halves, and both are
    load-bearing. It touches nothing, so the control has to replay its own hover and
    press states or the click lands on a dead pixel. And it is continuous in space and
    time: it enters once, stays for the whole walkthrough including every hold, moves
    only by travelling, and leaves once. A pointer that blinks out between actions and
-   reappears somewhere else has told the viewer the scene is a slideshow, and no
+   reappears somewhere else has told the viewer the demo is a slideshow, and no
    amount of fidelity elsewhere takes that back.
-6. **The scene must still read when the text does not.** On a phone a 1400px frame
+6. **The demo must still read when the text does not.** On a phone a 1400px frame
    lands near a third of its authored scale and body text is 4–5px. The camera's
    push-in is capped on purpose: magnifying further stops reading as a screen and
    starts reading as a crop. So the story is carried by silhouette, colour and
    motion, and anything that depends on reading a *word* belongs in the page copy
-   around the scene, not inside the frame.
+   around the demo, not inside the frame.
 7. **The frame fills its stage, whole.** Two failures, one rule. Never slice the UI to
    fill the space: no half navbar, no column dropped to make things fit. And never
-   letterbox to avoid slicing: dead bars beside the scene look like a broken embed and
+   letterbox to avoid slicing: dead bars beside the demo look like a broken embed and
    throw away the width you were given. Both mean the frame's aspect does not match
    the stage's, and the fix is to change one of them. You can. Both are yours.
 
@@ -66,7 +67,7 @@ own assessment.
 
 ### 0. Take the brief
 
-Do not infer the scene from the surrounding page. Five things decide what gets built
+Do not infer the demo from the surrounding page. Five things decide what gets built
 and none of them are in the codebase:
 
 | Unknown | What it decides |
@@ -75,7 +76,7 @@ and none of them are in the codebase:
 | Camera style | zoom-and-spotlight or flat — and with it, whether a browser frame earns its place |
 | Placement and stage geometry | frame dimensions, aspect, whether a fixed nav must be cleared |
 | Mobile posture | how hard the story has to work once the text is unreadable |
-| Theme | which palette the replica restates on `.scene` |
+| Theme | which palette the replica restates on `.demo` |
 
 **Camera style is a fork, not a detail.** Never assume it. Offer both:
 
@@ -129,8 +130,8 @@ Theme     dark/light + where the palette comes from
 
 ### 1. Pick one task, not a feature tour
 
-A scene shows **one person completing one task with one visible outcome**, in 8–15 seconds.
-"Approve the three leave requests waiting on HR" is a scene. "Leave management" is not.
+A demo shows **one person completing one task with one visible outcome**, in 8–15 seconds.
+"Approve the three leave requests waiting on HR" is a demo. "Leave management" is not.
 Write the one-sentence outcome down first; it becomes the `aria-label`.
 
 **Gate:** you can name the before-state, the actions, and the after-state in one sentence.
@@ -140,7 +141,7 @@ Write the one-sentence outcome down first; it becomes the `aria-label`.
 Open the real screens in the codebase and list: the route, the components that render it,
 the fixture shape those components need, the exact labels/statuses/colors, and the guard
 rules that decide what is actionable. Read code, do not guess. Do not invent generic SaaS
-UI — the reason a scene feels real is that it *is* the product.
+UI — the reason a demo feels real is that it *is* the product.
 
 **Gate:** you have a list of real component imports and the props they need.
 
@@ -164,13 +165,13 @@ answer (invariant 7).
 This is the single decision that makes everything downstream work, and getting it
 wrong produces the two visible failures in invariant 7:
 
-1. **Measure the real slot**, at each width it ships at. Open the element the scene
+1. **Measure the real slot**, at each width it ships at. Open the element the demo
    replaces and read its box. Do not guess from the design.
 2. **Author the frame to that aspect.** Pick the width the content needs, then let the
    height follow the ratio. If the extra height leaves room, spend it on the product:
    more rows, real spacing. Do not letterbox it away.
 3. **If the slot's aspect is wrong, change the slot.** It is your stylesheet. Set
-   `aspect-ratio` on the panel hosting the scene so it matches the frame. A slot whose
+   `aspect-ratio` on the panel hosting the demo so it matches the frame. A slot whose
    aspect changes across breakpoints, or that is square on phones while the screen is
    16:9, is a slot to pin, not a shape to letterbox into.
 
@@ -183,7 +184,7 @@ letterboxing half of invariant 7.
 Clipping is then only ever something a beat asked for by pushing in, which is the deal
 a viewer already accepts on a real site: the chrome stays whole until *they* zoom.
 
-**Narrow stages are the camera's job, not a second build.** `useSceneCamera` ramps a
+**Narrow stages are the camera's job, not a second build.** `useDemoCamera` ramps a
 push-in continuously as the stage shrinks — no breakpoint, no second frame, nothing to
 configure. What this step owes it is a frame whose *story* survives that ramp, because
 the ramp is capped and the text does not survive it (invariant 6). Check the frame the
@@ -198,7 +199,7 @@ with the text unreadable.
 ### 4. Write the beat script as data
 
 ```ts
-const BEATS: readonly SceneBeat[] = [
+const BEATS: readonly DemoBeat[] = [
   { hold: 1000, id: 'queue' },                                            // establish
   { hold: 1100, id: 'ping' },                                             // something arrives
   { hold: 420, id: 'open', target: NOTICE, travel: 900, zoom: 1.12 },     // act
@@ -223,14 +224,14 @@ Copy from `assets/` (they are dependency-free and framework-thin):
 
 | File | Owns |
 | --- | --- |
-| `use-scene-beats.ts` | `travel → press → done` per beat, pause-resume that banks unspent time |
-| `use-scene-active.ts` | the one true "is anyone watching" signal (intersection + panel liveness + tab visibility) |
-| `use-scene-camera.ts` | fit/cover scale, the narrow-stage ramp, damped pan to target, wide-target aiming, cursor point, focus box |
+| `use-demo-beats.ts` | `travel → press → done` per beat, pause-resume that banks unspent time |
+| `use-demo-active.ts` | the one true "is anyone watching" signal (intersection + panel liveness + tab visibility) |
+| `use-demo-camera.ts` | fit/cover scale, the narrow-stage ramp, damped pan to target, wide-target aiming, cursor point, focus box |
 | `use-typed-text.ts` | character/line-wise reveal for chat or console output |
-| `scene.css` | spotlight vignette (the blur layer is opt-in), cursor, press ripple, reduced-motion and narrow-viewport fallbacks |
-| `scene-template.tsx` | a complete skeleton wiring all of the above |
+| `demo.css` | spotlight vignette (the blur layer is opt-in), cursor, press ripple, reduced-motion and narrow-viewport fallbacks |
+| `demo-template.tsx` | a complete skeleton wiring all of the above |
 
-**Gate:** `reset()` runs when the scene goes inactive, so every viewer starts at beat 0.
+**Gate:** `reset()` runs when the demo goes inactive, so every viewer starts at beat 0.
 
 ### 6. Derive everything from committed beats
 
@@ -243,7 +244,7 @@ const selected  = !reduced && done >= AT.select && !committing
 One derivation block, then pass plain booleans down. Do not `useState` + `useEffect` your
 way to the same values — that reintroduces ordering bugs on fast scroll.
 
-**Gate:** scrubbing fast through the scene never leaves a stale cursor, menu, or toast.
+**Gate:** scrubbing fast through the demo never leaves a stale cursor, menu, or toast.
 
 ### 7. Degrade deliberately
 
@@ -252,9 +253,9 @@ way to the same values — that reintroduces ordering bugs on fast scroll.
 - Narrow viewports: nothing to implement. The camera's ramp handles the scale; use a
   beat's `push` (0 for "show the whole screen", above 1 for "this one has to be read")
   where the default shot is wrong. `references/authoring.md` has the numbers.
-- `role="img"` + one `aria-label` sentence on the scene root; `aria-hidden` on cursor,
+- `role="img"` + one `aria-label` sentence on the demo root; `aria-hidden` on cursor,
   spotlight, beacons, and decorative SVG.
-- `pointer-events: none` on the frame; `user-select: none` on the scene.
+- `pointer-events: none` on the frame; `user-select: none` on the demo.
 
 **Gate:** the reduced-motion render alone still communicates the outcome.
 
@@ -275,7 +276,7 @@ Load only what the current step needs.
 Run the project's own checks (formatter, linter, type-check), read the diff, then walk
 `references/checklist.md`.
 
-Then verify it in a browser. Most of what goes wrong with a scene cannot be settled by
+Then verify it in a browser. Most of what goes wrong with a demo cannot be settled by
 reading code: whether the frame fills the stage or sits in bars, whether the chrome is
 whole on the wide beats, whether the cursor reads against the replica's surface,
 whether the click lands before the state it causes. Those are the failures that reach

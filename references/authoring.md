@@ -1,21 +1,21 @@
-# Authoring the scene
+# Authoring the demo
 
 ## Story rules
 
 1. **One task, one outcome.** A named person completing one job. Not a feature tour.
-2. **Show a before-state.** The viewer must see what the product changed. A scene that
+2. **Show a before-state.** The viewer must see what the product changed. A demo that
    opens on the finished state has nothing to demonstrate.
 3. **Something arrives, someone acts, the result holds.** Establish → trigger → act →
    read. The "read" beat is not padding; it is the payoff.
 4. **Never show more than three actions.** Four is a tutorial, and nobody watches a
    tutorial on a landing page.
-5. **The `aria-label` is the script.** If you cannot write the sentence, the scene has
+5. **The `aria-label` is the script.** If you cannot write the sentence, the demo has
    no story yet. Write it before the code.
 
 ## The beat script
 
 ```ts
-const BEATS: readonly SceneBeat[] = [
+const BEATS: readonly DemoBeat[] = [
   { hold: 1000, id: 'queue'   },                                        // establish
   { hold: 1100, id: 'ping'    },                                        // trigger arrives
   { hold: 420,  id: 'open',    target: NOTICE,     travel: 900, zoom: 1.12 },
@@ -47,7 +47,7 @@ a hold immediately after an action.
 | Press | 170–220ms | Reads as intentional. |
 | Post-action hold | 1400–2000ms | Read what the click changed. |
 | Final payoff hold | 2200–3000ms | The outcome is the message; let it sit. |
-| Whole scene | 8–15s | Beyond 15s the loop restarts before anyone finishes watching. |
+| Whole demo | 8–15s | Beyond 15s the loop restarts before anyone finishes watching. |
 
 Two constants must agree or the motion detaches: the beat's `travel` and the cursor's
 CSS `transition` duration. Set the CSS slightly **shorter** (e.g. 800ms vs 900ms) so
@@ -71,7 +71,7 @@ at all, which is why the ripple ships on by default rather than as an opt-in flo
    white, which on a light product UI is invisible, and the press then reads as the
    cursor stopping for no reason.
 
-Drive all three off `data-beat` + `data-phase` on the scene root. Address controls
+Drive all three off `data-beat` + `data-phase` on the demo root. Address controls
 inside shared components by their accessible name (`[aria-label="…"]`) rather than
 adding marketing classes to product components.
 
@@ -109,7 +109,7 @@ they are checking it.
   make sure the chrome is in shot. Push in only for the actions between them. A loop
   where every beat is targeted never shows the product, only its parts.
 
-### Flat scenes (no camera)
+### Flat demos (no camera)
 
 If the brief chose flat, everything above stops applying. Three changes, and they only
 work made together:
@@ -121,21 +121,21 @@ work made together:
   where to look. Without one, the pulse in the beat before each action is the only
   thing doing that job — so give *every* action beat a beacon, not just the first.
 
-The cursor is unaffected: `useSceneCamera` returns `cursorX/cursorY` from the same
+The cursor is unaffected: `useDemoCamera` returns `cursorX/cursorY` from the same
 target measurement whether or not it pans.
 
 Timing shifts. Holds can come down 10–20% since nothing has to travel, but the opening
 establish beat should get *longer* — the viewer is taking in a whole screen at once
 instead of being pointed at one control.
 
-A flat scene still gets the narrow-stage ramp, since that is fit and not camera work.
+A flat demo still gets the narrow-stage ramp, since that is fit and not camera work.
 If flat means flat at every width, give every beat `push: 0`.
 
 ### On a narrow viewport
 
 You configure nothing. The camera ramps its own push-in as the stage shrinks —
 continuously, so there is no breakpoint to lurch across — and it is 1 on any stage
-wide enough to fit the scene at its authored scale.
+wide enough to fit the demo at its authored scale.
 
 Know what that ramp does and does not buy. A 1400px frame on a phone-sized stage fits
 at roughly 0.24, which puts 12px body text at 3px. The ramp is capped at 1.55, so the
@@ -148,15 +148,15 @@ The per-beat lever is `push`:
 - **`push: 0`** — show the whole screen, at every width. The camera holds the contain
   fit, so nothing is sliced: no half navbar, no sidebar cut down the middle. This is
   the setting for the establish beat, for any "pull back and hold", and for the
-  payoff. Overflow is then only ever something the scene chose by pushing in, exactly
+  payoff. Overflow is then only ever something the demo chose by pushing in, exactly
   as on a real site, where the chrome stays whole until someone zooms.
 
   **It assumes the frame's aspect matches the stage's.** If it does not, the contain
   fit fills one axis and leaves bars on the other, and `push: 0` turns into the
   letterboxing failure rather than the fix. Settle the aspect in step 3 first.
 - **`push` above 1** — push further in, for the one beat that genuinely has to be
-  *read* on a phone. Use it once per scene at most.
-- Either way it does nothing on a stage wide enough to fit the scene, so a beat
+  *read* on a phone. Use it once per demo at most.
+- Either way it does nothing on a stage wide enough to fit the demo, so a beat
   tuned for a phone cannot zoom the desktop composition.
 
 ## Typed text

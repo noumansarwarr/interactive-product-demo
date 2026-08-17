@@ -1,18 +1,18 @@
 'use client';
 
 /**
- * Skeleton demo scene. Copy, rename, and replace the Screen + BEATS.
+ * Skeleton interactive product demo. Copy, rename, and replace the Screen + BEATS.
  * Everything else is mechanism you should not need to change.
  *
- * Copy `assets/scene.css` alongside this as `scene.module.css`, and replace its
- * `ns` @property prefix with a token unique to this scene.
+ * Copy `assets/demo.css` alongside this as `demo.module.css`, and replace its
+ * `ns` @property prefix with a token unique to this demo.
  */
 
 import * as React from 'react';
-import styles from './scene.module.css';
-import { useSceneActive } from './use-scene-active';
-import { useSceneBeats, type SceneBeat } from './use-scene-beats';
-import { useSceneCamera, useSpotMarker } from './use-scene-camera';
+import styles from './demo.module.css';
+import { useDemoActive } from './use-demo-active';
+import { useDemoBeats, type DemoBeat } from './use-demo-beats';
+import { useDemoCamera, useSpotMarker } from './use-demo-camera';
 
 // Authored frame size. Pick it from the real screen: big enough to hold the
 // WHOLE screen, chrome included, without scrolling. Keep its aspect close to the
@@ -21,7 +21,7 @@ import { useSceneCamera, useSpotMarker } from './use-scene-camera';
 // be in shot, use `fit: 'contain'` instead and let it letterbox.
 const FRAME = { height: 900, width: 1400 };
 
-// Targets. Prefer a literal `data-tour-target` in your own markup; use
+// Targets. Prefer a literal `data-demo-target` in your own markup; use
 // useSpotMarker for controls inside shared components you don't own.
 const PRIMARY = 'primary';
 
@@ -29,7 +29,7 @@ const PRIMARY = 'primary';
 // One task, ~10s. Action beats alternate with holds long enough to read what
 // the click changed. `travel` is the cursor's crossing time; keep it in step
 // with the cursor's CSS transition.
-const BEATS: readonly SceneBeat[] = [
+const BEATS: readonly DemoBeat[] = [
   // `push: 0` on every wide beat: contain fit at all widths, nothing clipped.
   // Without it these inherit `cover` and the stage's aspect ratio decides how
   // much of the navbar the viewer gets, which is exactly the wrong thing to
@@ -50,20 +50,20 @@ const AT = { act: 2 } as const;
 // The cursor enters once and leaves once. Between these two beats it is on
 // stage continuously, including through every hold: a pointer that blinks out
 // while nothing is being clicked and reappears somewhere else is the single
-// fastest way to make a scene read as a fake.
+// fastest way to make a demo read as a fake.
 const FIRST_ACTION = BEATS.findIndex((b) => b.target);
 const LAST_ACTION = BEATS.map((b) => Boolean(b.target)).lastIndexOf(true);
 
-// No spotlight. The default scene shows the page, full stop: the camera's
+// No spotlight. The default demo shows the page, full stop: the camera's
 // push-in and the beacon already say where to look, and dimming a product you
 // are trying to sell is a strange thing to do. Both spotlight layers (`.dim`
-// vignette and `.blur`) are opt-in — scene.css has the rules and what to add
-// back if a particular scene genuinely needs one.
+// vignette and `.blur`) are opt-in — demo.css has the rules and what to add
+// back if a particular demo genuinely needs one.
 
 // A control inside a shared component, addressed by its accessible name.
 const PRIMARY_AT = '[aria-label="Primary action"]';
 
-export function DemoScene() {
+export function InteractiveProductDemo() {
   const viewportRef = React.useRef<HTMLDivElement>(null);
   const frameRef = React.useRef<HTMLDivElement>(null);
   const [reduced, setReduced] = React.useState(false);
@@ -76,8 +76,8 @@ export function DemoScene() {
     return () => media.removeEventListener('change', sync);
   }, []);
 
-  const live = useSceneActive(viewportRef);
-  const { index, phase, reset } = useSceneBeats(BEATS, live && !reduced);
+  const live = useDemoActive(viewportRef);
+  const { index, phase, reset } = useDemoBeats(BEATS, live && !reduced);
 
   // Rewind once off screen, so every viewer gets the story from the top.
   React.useEffect(() => {
@@ -98,18 +98,18 @@ export function DemoScene() {
   const acting = !reduced && !!beat.target && !beat.quiet;
 
   // The key must change whenever the marked control moves, mounts or unmounts —
-  // list every scene state that shifts it, not just `live`, or the marker keeps
+  // list every demo state that shifts it, not just `live`, or the marker keeps
   // covering where the control used to be.
   const primarySpot = useSpotMarker(frameRef, PRIMARY_AT, `${live}:${acted}`);
 
   // Narrow stages need no configuration here: the camera ramps its own push-in
   // as the stage gets smaller. `push` is the per-beat lever over that — 0 for a
   // beat that must show the whole screen, >1 for one that must be *read* on a
-  // phone — and it does nothing on a stage wide enough to fit the scene.
+  // phone — and it does nothing on a stage wide enough to fit the demo.
   //
-  // This template pushes in and pans. For a flat scene pass `pan: false` and
+  // This template pushes in and pans. For a flat demo pass `pan: false` and
   // `zoom: 1`; the cursor needs no changes either way. See authoring.md.
-  const camera = useSceneCamera({
+  const camera = useDemoCamera({
     fit: 'cover',
     frameHeight: FRAME.height,
     frameRef,
@@ -127,7 +127,7 @@ export function DemoScene() {
   return (
     <div
       ref={viewportRef}
-      className={styles.scene}
+      className={styles.demo}
       data-beat={beat.id}
       data-live={live ? '' : undefined}
       data-phase={phase}
@@ -143,20 +143,20 @@ export function DemoScene() {
       >
         {/* The replica: the browser bar if the brief asked for one, then your
             app's real chrome, real page components, and fixtures.
-            Pass plain booleans; never let a child own scene state. */}
+            Pass plain booleans; never let a child own demo state. */}
         <Screen acted={acted} />
 
         {primarySpot && (
           <span
             className={styles.spot}
-            data-tour-target={PRIMARY}
+            data-demo-target={PRIMARY}
             style={primarySpot}
             aria-hidden="true"
           />
         )}
       </div>
 
-      {/* No spotlight layers here on purpose. See scene.css if a scene needs
+      {/* No spotlight layers here on purpose. See demo.css if a demo needs
           one; it also needs the --nsf* vars and data-focus adding back. */}
 
       <span

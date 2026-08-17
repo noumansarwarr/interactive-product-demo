@@ -1,9 +1,9 @@
 /* ─────────────────────────────────────────────────────────────────────────
-   Demo scene: camera, spotlight, cursor.
-   Copy per scene as a CSS module and REPLACE THE `ns` PREFIX with a token
-   unique to this scene (ns -> leave, ats, payroll…).
+   Interactive product demo: camera, spotlight, cursor.
+   Copy per demo as a CSS module and REPLACE THE `ns` PREFIX with a token
+   unique to this demo (ns -> leave, ats, payroll…).
 
-   @property registration is GLOBAL and first-registration-wins. Two scenes
+   @property registration is GLOBAL and first-registration-wins. Two demos
    registering `--fx` with different initial values silently corrupt each
    other's spotlight, and the failure only shows when both are on the page.
    ───────────────────────────────────────────────────────────────────────── */
@@ -43,7 +43,7 @@
 
 /* ── Stage ─────────────────────────────────────────────────────────────── */
 
-.scene {
+.demo {
   position: absolute;
   inset: 0;
   z-index: 3;
@@ -73,13 +73,13 @@
     --nsdimy 800ms var(--e);
 }
 
-/* ── Camera: the fixed-size frame the scene is authored in ─────────────── */
+/* ── Camera: the fixed-size frame the demo is authored in ─────────────── */
 
 .camera {
   position: absolute;
   left: 0;
   top: 0;
-  width: 1400px; /* == frameWidth passed to useSceneCamera */
+  width: 1400px; /* == frameWidth passed to useDemoCamera */
   height: 900px; /* == frameHeight */
   transform-origin: 0 0;
   /* The replica is a picture, not a UI — a stray hover must not fire a real
@@ -88,22 +88,22 @@
   transition: transform 880ms var(--e);
 }
 
-/* Promoted only while this scene is the one playing: a permanent layer per
-   scene parks N stage-sized layers in memory for the one that moves. */
-.scene[data-live] .camera {
+/* Promoted only while this demo is the one playing: a permanent layer per
+   demo parks N stage-sized layers in memory for the one that moves. */
+.demo[data-live] .camera {
   will-change: transform;
 }
 
 /* ── Spotlight: OPT-IN, and off by default ─────────────────────────────────
-   The default scene has NO spotlight. Not the `.dim` vignette, not the `.blur`
+   The default demo has NO spotlight. Not the `.dim` vignette, not the `.blur`
    backdrop-filter. It shows the page. The camera's push-in and the beacon
    already direct the eye, and dimming or blurring the product you are trying
-   to sell works against the one job the scene has.
+   to sell works against the one job the demo has.
 
-   The rules below stay because a scene occasionally earns one: a dense screen
+   The rules below stay because a demo occasionally earns one: a dense screen
    where the acting control genuinely cannot be found. To switch one on, render
-   the element in the scene and add back the `--nsf*` custom properties and the
-   `data-focus` attribute the template drops (see scene-template.tsx). `.blur`
+   the element in the demo and add back the `--nsf*` custom properties and the
+   `data-focus` attribute the template drops (see demo-template.tsx). `.blur`
    additionally costs one stage-sized backdrop-filter, the most expensive thing
    on the page; prefer `.dim` if you need anything at all. */
 
@@ -119,8 +119,8 @@
     visibility 0s linear 440ms;
 }
 
-.scene[data-focus] .blur,
-.scene[data-focus] .dim {
+.demo[data-focus] .blur,
+.demo[data-focus] .dim {
   opacity: 1;
   visibility: visible;
   transition:
@@ -159,7 +159,7 @@
   );
 }
 
-/* Invisible marker pinned over a control the scene does not own. */
+/* Invisible marker pinned over a control the demo does not own. */
 .spot {
   position: absolute;
   z-index: 4;
@@ -169,7 +169,7 @@
 /* Idle beacon: draws the eye to the next control BEFORE the cursor sets off,
    so the click reads as deliberate instead of random. Point it at the beat
    that precedes the action (data-beat='<previous beat id>'). */
-.scene[data-live][data-beat='ready'] .spot[data-tour-target='primary']::after {
+.demo[data-live][data-beat='ready'] .spot[data-demo-target='primary']::after {
   content: '';
   position: absolute;
   inset: -6px;
@@ -243,7 +243,7 @@
    a small screen. A single disc reads as a smudge; the ring is what makes it
    read as a click.
 
-   Both are drawn in `--ripple` — set that per scene, see `.scene` above. */
+   Both are drawn in `--ripple` — set that per demo, see `.demo` above. */
 
 /* A static anchor box, and it must stay static. Animating `i` itself would
    multiply its transform AND its opacity into both layers below, so the ring
@@ -314,23 +314,23 @@
 /* ── Replayed control states ───────────────────────────────────────────────
    The cursor never really touches anything, so the control has to react on
    its own or the click reads as landing on a dead pixel. Drive from the beat
-   id + phase on the scene root. Address shared components by their aria-label
+   id + phase on the demo root. Address shared components by their aria-label
    rather than editing them to carry a marketing class. */
 
-.scene [data-tour-target],
-.scene [aria-label='Primary action'] {
+.demo [data-demo-target],
+.demo [aria-label='Primary action'] {
   transition:
     transform 140ms var(--e),
     box-shadow 180ms var(--e),
     filter 180ms var(--e);
 }
 
-.scene[data-beat='act'] [aria-label='Primary action'] {
+.demo[data-beat='act'] [aria-label='Primary action'] {
   box-shadow: 0 6px 14px -3px rgba(16, 185, 129, 0.5);
   filter: brightness(1.05);
 }
 
-.scene[data-beat='act'][data-phase='press'] [aria-label='Primary action'] {
+.demo[data-beat='act'][data-phase='press'] [aria-label='Primary action'] {
   transform: scale(0.97);
 }
 
@@ -342,7 +342,7 @@
    where it can be measured — a CSS breakpoint on top would fight it and would
    snap where the ramp is continuous.
 
-   The one saving worth taking: drop the blur, if this scene opted into it at
+   The one saving worth taking: drop the blur, if this demo opted into it at
    all. Two stage-sized backdrop-filter layers are the most expensive thing on
    the page, and at this width the frame is already pushed in on its target. */
 @media (max-width: 640px) {
@@ -352,9 +352,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scene *,
-  .scene *::before,
-  .scene *::after {
+  .demo *,
+  .demo *::before,
+  .demo *::after {
     animation: none !important;
     transition: none !important;
   }

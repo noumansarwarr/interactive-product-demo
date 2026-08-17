@@ -11,7 +11,7 @@ feed them fixtures.
 | App chrome (sidebar, header, breadcrumb, avatar) | **Rebuild once**, as a small `<Replica>` shell. It is mostly static, and the real shell drags in auth, routing, and stores. |
 | Page content (tables, cards, badges, toolbars, charts, empty states) | **Import the real components.** This is where fidelity lives. |
 | Data | **Fixtures typed with the real API response types.** The compiler then tells you when the product moved. |
-| Actions | `noop`. Nothing in a scene may mutate. |
+| Actions | `noop`. Nothing in a demo may mutate. |
 
 ### Rebuilding the shell is not licence to simplify it
 
@@ -23,11 +23,11 @@ The things that get dropped when the shell is rebuilt from memory, and that are 
 noticed: secondary nav, the search field, the notification bell, the user avatar and
 its label, count badges, and whatever is pinned to the bottom of the sidebar.
 
-If the scene should differ from the product — a highlight the real UI does not have, a
+If the demo should differ from the product — a highlight the real UI does not have, a
 simplified sidebar, invented flair — that is the user's call and it belongs in the
 brief. Anything not in the brief matches the product.
 
-The shell is where you plant permanent tour targets (`data-tour-target="nav-people"`)
+The shell is where you plant permanent demo targets (`data-demo-target="nav-people"`)
 because you own it. For controls inside imported components, use `useSpotMarker` with
 a selector — usually the accessible name — rather than editing a shared component to
 carry a marketing attribute.
@@ -39,7 +39,7 @@ carry a marketing attribute.
   another value. `undefined === undefined` is true, so a row with an absent
   `currentApproverId` matched against an absent `myEmployeeId` flags *every* row as
   "yours".
-- Keep one roster across all scenes — same names, codes, designations — so several
+- Keep one roster across all demos — same names, codes, designations — so several
   panels read as one company rather than four unrelated demos.
 - Model the guard rules the real screen applies (which rows are actionable, which are
   disabled). A bulk action that selects rows the product would refuse is a lie the
@@ -66,8 +66,8 @@ specificity, so every reused component loses its spacing and nothing you write i
 utility class brings it back.
 
 ```css
-.scene .page,
-.scene .page * {
+.demo .page,
+.demo .page * {
   margin: revert-layer;
   padding: revert-layer;
 }
@@ -81,10 +81,10 @@ around it sets its own padding and must keep it.
 
 Marketing pages often reassign app token names (`--color-border`, `--color-surface`,
 font vars) to their own palette. Every imported component inherits the marketing value
-through `border-border` and looks subtly wrong. Restate the app's values on `.scene`:
+through `border-border` and looks subtly wrong. Restate the app's values on `.demo`:
 
 ```css
-.scene {
+.demo {
   --color-border: #e2e8f0;
   --font-sans: var(--font-app);
 }
@@ -108,12 +108,12 @@ with `position: relative; z-index: 1` instead of pushing decoration negative.
 
 Optional, and decided in the brief. A top bar with a tab and the product's real URL
 buys "a real page someone is actually using" for around 60px of frame height. Worth
-drawing for a flat scene; usually wasted under a zoom camera, which crops it out of
+drawing for a flat demo; usually wasted under a zoom camera, which crops it out of
 shot for most of the loop.
 
 If it is in:
 
-- **Use the real URL, on the route the scene is showing.** A queue screen with a
+- **Use the real URL, on the route the demo is showing.** A queue screen with a
   generic `app.example.com` in the bar reads as a placeholder, which is the opposite
   of what the bar is there to do.
 - **Draw it, do not screenshot it.** A captured browser bar re-introduces the media
@@ -133,14 +133,14 @@ If it is in:
     that has to come off the product, and every one of them is another proportion to
     get wrong.
 - **Keep it dead.** No traffic lights that look pressable, no tab that looks
-  switchable, `aria-hidden` on the whole bar. It is set dressing; the scene's one
+  switchable, `aria-hidden` on the whole bar. It is set dressing; the demo's one
   `aria-label` already says what is happening.
 - **Budget its height out of the content, not into a taller frame.** It comes off the
   top of the same fixed frame, so it costs rows. Growing the frame instead means a
   smaller scale at every width.
 - **Expect it to be off screen on a phone.** The narrow-stage ramp pushes past it on
   every targeted beat, so it earns its height on desktop and is invisible where the
-  frame is tightest. That is another reason it belongs to flat scenes.
+  frame is tightest. That is another reason it belongs to flat demos.
 
 ## Sizing the frame
 

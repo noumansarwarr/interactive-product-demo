@@ -5,10 +5,10 @@
 ```
 Story (one task, one outcome)
   ↓  authored as data
-Beat script  ──►  useSceneBeats  ──►  { index, phase }
+Beat script  ──►  useDemoBeats  ──►  { index, phase }
   ↓  derived, never stored
 Committed-beat booleans           ──►  the replica renders that state
-  ↓  attributes on the scene root
+  ↓  attributes on the demo root
 data-beat / data-phase / data-live / data-focus
   ↓
 CSS interpolates geometry, replays control states, runs short keyframes
@@ -20,7 +20,7 @@ No drawing loop, no per-frame style writes on a large tree.
 ## DOM layers
 
 ```
-.scene                      viewport, container-type: inline-size, holds all state attrs
+.demo                      viewport, container-type: inline-size, holds all state attrs
 ├── .camera                 the fixed 1400×900 frame; translate3d + scale; pointer-events: none
 │   ├── <Replica>           optional browser bar + app chrome + REAL page components
 │   └── .spot ×n            invisible markers pinned over controls you don't own
@@ -51,17 +51,17 @@ Three properties fall out of this and are the reason it is written this way:
 - **Free reduced motion.** `reduced ||` on each line renders the end state with no
   separate code path to maintain.
 
-Only ever pass the derived booleans down. A child that holds its own copy of scene
+Only ever pass the derived booleans down. A child that holds its own copy of demo
 state will disagree with the cursor sooner or later.
 
 ## Camera math
 
-`useSceneCamera` fits a fixed frame into a fluid viewport each time the viewport
+`useDemoCamera` fits a fixed frame into a fluid viewport each time the viewport
 resizes, and pans toward the current target.
 
 - **`fit: 'contain'`** — the whole frame is visible. Right for a wide desktop stage.
 - **`fit: 'cover'`** — the frame is deliberately larger than the stage and clipped.
-  Right for narrow viewports and for a scene whose one indispensable dimension is
+  Right for narrow viewports and for a demo whose one indispensable dimension is
   width (a table): crop top and bottom, keep the columns readable.
 - **`zoom`** per beat multiplies the fitted scale — 1.10–1.18 is a push-in that reads
   as attention without becoming a magnifier.
@@ -71,13 +71,13 @@ resizes, and pans toward the current target.
 - Pan is clamped to the frame edges, and falls back to centred whenever the scaled
   frame is smaller than the viewport in that axis — otherwise a small frame gets
   pinned to the top-left.
-- **A flat scene** sets `pan: false` and holds `zoom` at 1, so the frame never moves.
+- **A flat demo** sets `pan: false` and holds `zoom` at 1, so the frame never moves.
   `cursorX`/`cursorY` still come out of the same target measurement, which is why the
   cursor needs no changes; the spotlight does have to be gated off separately, since
   `hasTarget` is still true. See `references/authoring.md`.
 - **The narrow-stage ramp** is the whole of the responsive behaviour. `pushIn(width)`
   multiplies the fitted scale as the stage drops below 640px, capped at 1.55, and is
-  exactly 1 on any stage wide enough to fit the scene. It ramps *continuously* rather
+  exactly 1 on any stage wide enough to fit the demo. It ramps *continuously* rather
   than snapping at a breakpoint, so resizing never shows a lurch. A beat's `push`
   multiplies it, and values above 1 only apply where the ramp is already active, so a
   phone-tuned beat cannot zoom the desktop composition.
@@ -128,16 +128,16 @@ animate. Unregistered custom properties are strings and snap.
 
 ## Activity gating
 
-`useSceneActive` returns `onScreen && panelIsLive && !document.hidden`.
+`useDemoActive` returns `onScreen && panelIsLive && !document.hidden`.
 
 The failure it exists to prevent: a deck keeps every panel mounted and hides the
 inactive ones with `visibility`/`opacity`. IntersectionObserver still reports all of
-them as intersecting, so all N scenes run their timers, their cameras, and their
+them as intersecting, so all N demos run their timers, their cameras, and their
 `will-change` layers simultaneously, forever.
 
 The fallback matters as much as the signal: when the deck's scroll driver stands down
 (stacked mobile layout, reduced motion) **no** panel carries the live class, and the
-hook must fall back to intersection alone rather than freezing every scene. That is
+hook must fall back to intersection alone rather than freezing every demo. That is
 what the `|| !deck.querySelector('.is-live')` clause does.
 
 The MutationObserver watches the **deck**, not the panel. In the stacked layout your

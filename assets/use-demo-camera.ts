@@ -24,7 +24,7 @@ interface CameraOptions {
    * for a beat that shows the whole screen.
    */
   push?: number;
-  /** value of the [data-tour-target] attribute to frame */
+  /** value of the [data-demo-target] attribute to frame */
   target?: string;
   viewportRef: React.RefObject<HTMLDivElement | null>;
   /** multiplies the fitted scale, so a beat can push in on its target */
@@ -45,12 +45,12 @@ const NARROW = 640;
 const MAX_PUSH = 1.55;
 
 /**
- * How much to push in past the fitted scale. The scenes are fixed ~1400px
+ * How much to push in past the fitted scale. The demos are fixed ~1400px
  * replicas, so a phone-sized stage fits them at ~0.24 — 12px body text lands at
  * 3px. This ramps continuously (no snap at a breakpoint) and is 1 on every stage
  * wide enough to read at its fitted size.
  *
- * This is the whole of the scene's responsive behaviour. Resist adding a
+ * This is the whole of the demo's responsive behaviour. Resist adding a
  * breakpoint on top: a ramp keeps the composition believable at every width in
  * between, and a snap is visible as a lurch to anyone resizing.
  */
@@ -84,14 +84,14 @@ export const spotIn = (node: HTMLElement, frame: HTMLElement): Spot => {
 
 /**
  * Fits a fixed-size frame into a fluid viewport and pans it toward the current
- * beat's target. Returns everything the scene needs to place the camera, the
+ * beat's target. Returns everything the demo needs to place the camera, the
  * cursor and the spotlight — all in viewport pixels.
  *
  * Apply as:
  *   frame.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`
  *   cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`
  */
-export function useSceneCamera({
+export function useDemoCamera({
   fit = 'contain',
   frameHeight,
   frameRef,
@@ -137,9 +137,9 @@ export function useSceneCamera({
           : Math.min(width / frameWidth, height / frameHeight);
       const narrow = pushIn(width);
       // The factor only ever applies on a stage that is already being pushed
-      // in, so a beat asking for a tighter shot can't zoom the desktop scene.
+      // in, so a beat asking for a tighter shot can't zoom the desktop demo.
       // The floor is the contain fit: `push: 0` pulls back to the whole frame,
-      // letterboxed against the scene's own backdrop, rather than to `cover`'s
+      // letterboxed against the demo's own backdrop, rather than to `cover`'s
       // crop — a beat that exists to show the whole screen has to show it.
       const contain = Math.min(width / frameWidth, height / frameHeight);
       // `push: 0` means "show the whole screen", and it means it at EVERY width:
@@ -152,7 +152,7 @@ export function useSceneCamera({
           ? contain
           : Math.max(contain, base * zoom * (narrow > 1 ? narrow * push : 1));
       const node = target
-        ? frame.querySelector<HTMLElement>(`[data-tour-target="${target}"]`)
+        ? frame.querySelector<HTMLElement>(`[data-demo-target="${target}"]`)
         : null;
       const spot = node
         ? spotIn(node, frame)
@@ -268,10 +268,10 @@ export function useSceneCamera({
 type Box = Pick<React.CSSProperties, 'height' | 'left' | 'top' | 'width'>;
 
 /**
- * Pins an invisible tour target over a node the scene does not own — a control
+ * Pins an invisible demo target over a node the demo does not own — a control
  * inside a shared app component you do not want to pollute with a marketing
  * attribute. Render the returned box as an absolutely positioned
- * `<span data-tour-target=... aria-hidden />` inside the frame.
+ * `<span data-demo-target=... aria-hidden />` inside the frame.
  *
  * `key` is any string that changes when that node moves, mounts or unmounts
  * (e.g. `String(selected)` for a bar that appears with a selection).
