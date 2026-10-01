@@ -2,7 +2,7 @@
   "name": "interactive-product-demo",
   "displayName": "Interactive Product Demo",
   "description": "Build animated landing-page product demos from live DOM and CSS instead of video or GIF: a replica of your real UI, a scripted cursor, and a camera that pans and spotlights each control.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": {
     "name": "Nouman Sarwar",
     "url": "https://github.com/noumansarwarr"

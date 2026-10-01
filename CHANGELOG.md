@@ -1,11 +1,21 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
-Made the repo easier to find in search engines, AI search, and answer engines. The
-skill itself is unchanged.
+Optional video export, one-command install, and a repo that search engines and AI
+search can find. Nothing about how a live demo is built, scripted or verified has
+changed: the hooks, `demo.css`, the template, the brief, the invariants and the ship
+gate are byte-for-byte what 0.3.0 shipped.
 
-- **README opens with a definition.** One plain "Interactive Product Demo is…" sentence,
+- **Video export, opt-in.** After the ship gate passes, the skill asks once whether
+  the user also wants a video file of the demo. On a no, nothing happens. On a yes,
+  `assets/record-demo.mjs` records exactly one loop of the live demo in headless
+  Chromium, from one wrap to the next so it loops seamlessly. It writes MP4, GIF or
+  WebM plus a poster of the payoff. Recording is read-only: it watches the `data-beat`
+  attribute the template already renders and never touches the demo. Playwright and
+  ffmpeg can be installed outside the project, so its `package.json` is untouched.
+  `references/video.md` has the flow, flags, checks and failures.
+- **README** opens with a definition.** One plain "Interactive Product Demo is…" sentence,
   key facts (no runtime dependencies, about 40 KB of source, React 18+), and badges.
   Section headings now ask the questions people search for, and the first is answered
   directly beneath it.

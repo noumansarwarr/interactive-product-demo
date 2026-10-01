@@ -8,7 +8,8 @@ description: >-
   tour replay, or when replacing a screen recording / Loom / GIF on a marketing page.
   Triggers: "animate the product", "show the product in action", "showcase scene",
   "interactive product demo", "hero animation", "scripted cursor demo",
-  "demo without recording a video".
+  "demo without recording a video". Once the demo ships it can also export it as an
+  MP4, GIF or WebM, but only if the user says yes when asked.
 ---
 
 # Interactive Product Demo
@@ -270,6 +271,7 @@ Load only what the current step needs.
 | `references/authoring.md` | writing the beat script, timing, story rules, cursor legibility |
 | `references/pitfalls.md` | anything looks wrong — read this before debugging |
 | `references/checklist.md` | before shipping |
+| `references/video.md` | only after the user said yes to a video (see Video export) |
 
 ## Ship gate
 
@@ -286,3 +288,25 @@ If the user has named a tool, use it. If not, ask which one — do not pick one 
 start driving it, and do not skip the step because none was named. Drive the real page
 at more than one width, step the beats, and report what you saw rather than what the
 code implies.
+
+## Video export (opt-in)
+
+Only after the ship gate has passed, and only with the user's yes. The live demo is
+the deliverable; a video is a copy of it for places that cannot run code.
+
+**Ask first, once.** One question, with "no" as the default:
+
+> Do you also want a video file of this demo, for places that can't run it live
+> (social posts, a GitHub README, email, a launch post)? No / MP4 / MP4 + GIF
+
+- **No, or no answer:** stop. Do not record, and do not ask again.
+- **The original request already asked for a video:** that is the yes; skip the
+  question and use the formats it named (MP4 if none).
+- **Yes:** read `references/video.md` and follow it.
+
+**Recording is read-only.** It never changes the demo, its `BEATS`, its hooks or its
+stylesheet. If the recording looks wrong, the demo is wrong: fix it, re-run the ship
+gate, then record again.
+
+**Gate:** you looked at the video's frames and poster, not just the exit code, and
+they pass the checklist in `references/video.md`.

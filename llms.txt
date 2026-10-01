@@ -15,6 +15,7 @@ Install in Claude Code: `/plugin marketplace add noumansarwarr/interactive-produ
 - [Replica](https://github.com/noumansarwarr/interactive-product-demo/blob/main/references/replica.md): reusing real app components on a marketing page
 - [Pitfalls](https://github.com/noumansarwarr/interactive-product-demo/blob/main/references/pitfalls.md): silent and layout-specific failures
 - [Checklist](https://github.com/noumansarwarr/interactive-product-demo/blob/main/references/checklist.md): pre-ship gate
+- [Video export](https://github.com/noumansarwarr/interactive-product-demo/blob/main/references/video.md): optional, asked after the demo ships; records one seamless loop to MP4, GIF or WebM
 
 ## Source
 
@@ -22,6 +23,7 @@ Install in Claude Code: `/plugin marketplace add noumansarwarr/interactive-produ
 - [use-demo-camera.ts](https://github.com/noumansarwarr/interactive-product-demo/blob/main/assets/use-demo-camera.ts): fit/cover, narrow-stage push-in, damped pan, spot markers
 - [use-demo-active.ts](https://github.com/noumansarwarr/interactive-product-demo/blob/main/assets/use-demo-active.ts): runs the demo only while it is on screen and the tab is visible
 - [demo-template.tsx](https://github.com/noumansarwarr/interactive-product-demo/blob/main/assets/demo-template.tsx): a complete wired skeleton
+- [record-demo.mjs](https://github.com/noumansarwarr/interactive-product-demo/blob/main/assets/record-demo.mjs): read-only recorder for the optional video export (Playwright + ffmpeg)
 
 ## Optional
 

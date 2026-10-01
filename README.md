@@ -1,7 +1,7 @@
 # Interactive Product Demo — a Claude Code skill for animated product demos without video
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.3.0-informational.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.4.0-informational.svg)](CHANGELOG.md)
 [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-d97757.svg)](https://claude.com/claude-code)
 [![React 18+](https://img.shields.io/badge/React-18%2B-61dafb.svg)](#requirements)
 
@@ -210,6 +210,16 @@ invisible in a diff.
 If you have a browser tool wired up — Chrome DevTools MCP, Playwright, Claude in Chrome —
 name it in your first message and Claude will use it instead of asking.
 
+### 6. Get a video too (optional)
+
+Once the demo ships, Claude asks once whether you also want a video file of it, for
+places that can't run it live: social posts, a GitHub README, email, a launch post.
+Say no and nothing else happens. Say yes and it records exactly one loop of the live
+demo in headless Chromium. You get an MP4 (plus GIF or WebM if you want them) and a
+poster image of the final state.
+
+The video is a copy. The live demo on your page stays exactly as it is.
+
 ---
 
 ## What does it add to my codebase?
@@ -266,6 +276,7 @@ references/
   authoring.md                beat scripts, timing budget, cursor legibility
   pitfalls.md                 the failures that are silent or layout-specific
   checklist.md                pre-ship gate
+  video.md                    optional video export: when to ask, how to record, checks
 assets/
   use-demo-beats.ts           travel → press → done, with pause/resume banking
   use-demo-active.ts          the one true "is anyone watching" signal
@@ -273,6 +284,7 @@ assets/
   use-typed-text.ts           character/line reveal for chat and console output
   demo.css                    spotlight, cursor, press ripple, degradation
   demo-template.tsx           a complete wired skeleton
+  record-demo.mjs             records one loop of the live demo to MP4 / GIF / WebM
 ```
 
 Claude loads only the reference the current step needs — you don't have to read any of
@@ -331,8 +343,9 @@ viewers to click through the product themselves, a hosted platform is the better
 
 [/brag](https://github.com/latent-spaces/brag) turns a project into a short MP4 launch
 video, with music and share copy, for posting on social media. This skill builds a live
-demo that runs inside your landing page. It ships as code, not a video file, so it
-stays sharp, responsive, and in step with your UI. They work well together: a /brag
+demo that runs inside your landing page. The demo ships as code, not a video file, so
+it stays sharp, responsive, and in step with your UI. If you also want a recording of
+that same demo, it can export one loop as MP4 or GIF. They work well together: a /brag
 video to announce the product, and an interactive product demo in the hero section.
 
 ### Does it work without React?
@@ -359,6 +372,14 @@ watched it through. Hold on each result for 1.4–2 seconds so it can be read.
 Yes. The camera pushes in further as the stage gets narrower. Text on a phone can render
 at 4–5px, so the demo is designed to tell its story through shape, colour, and motion.
 Anything that depends on reading a word belongs in the page copy around the demo.
+
+### Can it make a video of the demo?
+
+Yes, if you want one. After the demo ships, Claude asks whether you also want a video.
+It records one seamless loop of the live demo to MP4, and to GIF or WebM if you ask,
+plus a poster image. The live demo stays on your page; the video is for places that
+can't run code. It needs Playwright and ffmpeg, which Claude can install outside your
+project so your `package.json` stays untouched.
 
 ### Is it free?
 
