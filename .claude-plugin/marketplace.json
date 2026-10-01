@@ -1,0 +1,15 @@
+{
+  "name": "interactive-product-demo",
+  "description": "Animated landing-page product demos built from live DOM and CSS instead of video or GIF.",
+  "owner": {
+    "name": "Nouman Sarwar",
+    "url": "https://github.com/noumansarwarr"
+  },
+  "plugins": [
+    {
+      "name": "interactive-product-demo",
+      "source": "./",
+      "description": "Build a landing-page product demo from your real UI components: a scripted cursor, camera pans and spotlights, no video file."
+    }
+  ]
+}

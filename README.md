@@ -66,8 +66,28 @@ vanilla port only replaces the scheduling. Say so up front and Claude will port 
 
 ## How do I install the skill?
 
-Clone the skill into your skills directory. Personal install makes it available in every
-project:
+**Claude Code plugin (recommended).** Inside Claude Code:
+
+```
+/plugin marketplace add noumansarwarr/interactive-product-demo
+/plugin install interactive-product-demo@interactive-product-demo
+```
+
+As a plugin, the skill is listed as `interactive-product-demo:interactive-product-demo`.
+Update it later with `claude plugin update interactive-product-demo`.
+
+**Any agent that reads skills: one command with the [`skills`](https://github.com/vercel-labs/skills) CLI.**
+
+```bash
+npx skills add https://github.com/noumansarwarr/interactive-product-demo -g
+```
+
+`-g` installs it for every project; leave it off to install into the current project only.
+
+<details>
+<summary>No installer? Clone it straight into your skills directory.</summary>
+
+Personal install, available in every project:
 
 ```bash
 git clone https://github.com/noumansarwarr/interactive-product-demo \
@@ -83,7 +103,9 @@ git clone https://github.com/noumansarwarr/interactive-product-demo \
 
 On Windows (PowerShell), the personal path is `$env:USERPROFILE\.claude\skills\`.
 
-**Verify it:** start Claude Code and type `/` — `interactive-product-demo` should appear
+</details>
+
+**Verify it:** start Claude Code and type `/`. `interactive-product-demo` should appear
 in the list.
 
 ---
@@ -237,6 +259,7 @@ cursor, or spotlight.
 SKILL.md                      the workflow, the seven invariants, the ship gate
 llms.txt                      a plain-text map of this repo for LLMs and AI search
 CITATION.cff                  citation metadata
+.claude-plugin/                Claude Code plugin and marketplace manifests
 references/
   architecture.md             layer model, camera math, state derivation, activity gating
   replica.md                  reusing real app components on a marketing page

@@ -14,6 +14,10 @@ skill itself is unchanged.
 - **`llms.txt`** gives LLMs and AI crawlers a plain-text map of the repo.
 - **`CITATION.cff`** adds author and citation metadata, which GitHub shows as
   "Cite this repository".
+- **One-command install.** A `.claude-plugin/` marketplace and plugin manifest make it
+  installable with `/plugin install interactive-product-demo@interactive-product-demo`,
+  and the [`skills`](https://github.com/vercel-labs/skills) CLI picks it up with
+  `npx skills add`. Cloning into a skills directory still works, since nothing moved.
 
 ## 0.3.0
 

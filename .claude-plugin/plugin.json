@@ -1,0 +1,14 @@
+{
+  "name": "interactive-product-demo",
+  "displayName": "Interactive Product Demo",
+  "description": "Build animated landing-page product demos from live DOM and CSS instead of video or GIF: a replica of your real UI, a scripted cursor, and a camera that pans and spotlights each control.",
+  "version": "0.3.0",
+  "author": {
+    "name": "Nouman Sarwar",
+    "url": "https://github.com/noumansarwarr"
+  },
+  "homepage": "https://github.com/noumansarwarr/interactive-product-demo",
+  "repository": "https://github.com/noumansarwarr/interactive-product-demo",
+  "license": "MIT",
+  "keywords": ["product-demo", "interactive-demo", "hero-animation", "landing-page", "react", "css-animation", "video-alternative", "skill"]
+}

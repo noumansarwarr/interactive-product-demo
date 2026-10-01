@@ -4,7 +4,7 @@
 
 Use it for hero animations, product showcases, feature walkthroughs, animated screenshots, or to replace a screen recording, Loom, or GIF on a marketing page. It requires Claude Code and React 18+ with TypeScript and CSS Modules. The CSS is framework-agnostic, and the hooks can be ported to Vue, Svelte, or vanilla JS.
 
-Install: `git clone https://github.com/noumansarwarr/interactive-product-demo ~/.claude/skills/interactive-product-demo`, then run `/interactive-product-demo` in Claude Code.
+Install in Claude Code: `/plugin marketplace add noumansarwarr/interactive-product-demo`, then `/plugin install interactive-product-demo@interactive-product-demo`. Any agent that reads skills: `npx skills add https://github.com/noumansarwarr/interactive-product-demo -g`. Or clone it into `~/.claude/skills/interactive-product-demo`.
 
 ## Docs
 
