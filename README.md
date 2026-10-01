@@ -1,7 +1,20 @@
-# Interactive Product Demo
+# Interactive Product Demo — a Claude Code skill for animated product demos without video
 
-A [Claude Code](https://claude.com/claude-code) skill that builds your product demo as a
-**live DOM/CSS demo** instead of a screen recording.
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.3.0-informational.svg)](CHANGELOG.md)
+[![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-d97757.svg)](https://claude.com/claude-code)
+[![React 18+](https://img.shields.io/badge/React-18%2B-61dafb.svg)](#requirements)
+
+**Interactive Product Demo is an open-source [Claude Code](https://claude.com/claude-code)
+skill that builds a landing-page product demo out of live DOM and CSS instead of a
+screen recording.** It replicates a screen of your React app with your own components,
+then animates a scripted cursor and a panning, spotlighting camera through one task.
+No video, GIF, Lottie, or canvas. It adds about 40 KB of plain TypeScript and CSS
+source and no runtime dependencies.
+
+**In short:** a code-based, auto-playing alternative to a hero video, a Loom, or an
+animated GIF of your UI. Text stays sharp, layout stays responsive, and when your
+product changes, the TypeScript compiler tells you the demo needs updating.
 
 You point Claude at a screen in your app. It builds a replica from your own components
 fed fixture data, then scripts a cursor through one task while a camera pans, pushes in,
@@ -18,7 +31,12 @@ Claude: [asks 2–4 questions] → [writes a brief, you confirm]
 
 ---
 
-## Why not a video
+## Why build a product demo in code instead of a video?
+
+A coded demo weighs nothing beyond the page, renders sharp text at any size, reflows to
+fit its container, and is edited like any other component. A video has to be
+re-recorded every time the copy or the UI changes. Until then it quietly shows a
+product that no longer exists.
 
 | | Video / GIF | Interactive product demo |
 | --- | --- | --- |
@@ -46,7 +64,7 @@ vanilla port only replaces the scheduling. Say so up front and Claude will port 
 
 ---
 
-## Install
+## How do I install the skill?
 
 Clone the skill into your skills directory. Personal install makes it available in every
 project:
@@ -70,7 +88,7 @@ in the list.
 
 ---
 
-## How to use it
+## How do I build an interactive product demo with Claude Code?
 
 ### 1. Ask
 
@@ -172,7 +190,7 @@ name it in your first message and Claude will use it instead of asking.
 
 ---
 
-## What lands in your codebase
+## What does it add to my codebase?
 
 A demo component plus its stylesheet, with the primitives copied in as plain source
 files you own and can edit:
@@ -191,7 +209,7 @@ No package to install, no runtime dependency added, nothing to keep upgraded.
 
 ---
 
-## Tuning it afterwards
+## How do I tune the demo afterwards?
 
 Most changes are one edit to the `BEATS` array:
 
@@ -217,6 +235,8 @@ cursor, or spotlight.
 
 ```
 SKILL.md                      the workflow, the seven invariants, the ship gate
+llms.txt                      a plain-text map of this repo for LLMs and AI search
+CITATION.cff                  citation metadata
 references/
   architecture.md             layer model, camera math, state derivation, activity gating
   replica.md                  reusing real app components on a marketing page
@@ -268,6 +288,55 @@ More, with the reasoning behind each: `references/pitfalls.md`.
 
 ---
 
+## FAQ
+
+### What is an interactive product demo?
+
+An interactive product demo is an animated walkthrough of a real software interface,
+shown on a website in place of a screenshot or a video. This skill builds one from
+the product's own UI components running in the browser. A scripted cursor completes
+one task while a camera pans and spotlights each control.
+
+### Is this a replacement for Arcade, Storylane, Navattic, or Supademo?
+
+Partly. Those hosted platforms capture your app and serve a click-through tour from
+their embed, and the viewer drives it. This skill writes an auto-playing demo into your
+own codebase, so there's no third-party embed, account, or capture step. If you want
+viewers to click through the product themselves, a hosted platform is the better fit.
+
+### Does it work without React?
+
+The CSS works with any framework. The whole contract between JavaScript and CSS is a
+few data attributes and custom properties on one root element. The scheduling hooks
+are written for React 18+, but Vue, Svelte, and vanilla JS ports only need to replace
+the scheduling. Say so in your first message and Claude will port the hooks.
+
+### Does it hurt page speed or Core Web Vitals?
+
+It ships no media file and adds no runtime dependency. The demo is ordinary DOM that
+renders with the page. Its timers stop whenever the demo is off screen or the tab is
+hidden, and `prefers-reduced-motion` renders the finished end state with no animation.
+
+### How long should a product demo animation be?
+
+Between 8 and 15 seconds. Any longer and the loop restarts before most visitors have
+watched it through. Hold on each result for 1.4–2 seconds so it can be read.
+`references/authoring.md` has the full timing budget.
+
+### Does the demo work on mobile?
+
+Yes. The camera pushes in further as the stage gets narrower. Text on a phone can render
+at 4–5px, so the demo is designed to tell its story through shape, colour, and motion.
+Anything that depends on reading a word belongs in the page copy around the demo.
+
+### Is it free?
+
+Yes. It's MIT-licensed, and the generated code is plain source you own and can edit.
+
+---
+
 ## License
 
 MIT — see [LICENSE](LICENSE). Changes by release in [CHANGELOG.md](CHANGELOG.md).
+
+Maintained by [Nouman Sarwar](https://github.com/noumansarwarr).

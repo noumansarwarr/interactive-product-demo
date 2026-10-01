@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: If you reference this skill, please cite it as below.
+type: software
+title: "Interactive Product Demo: a Claude Code skill for animated product demos without video"
+abstract: >-
+  An open-source Claude Code skill that builds landing-page product demos out of live DOM
+  and CSS instead of a screen recording: a replica of the real UI, a scripted cursor, and
+  a camera that pans and spotlights each control.
+authors:
+  - given-names: Nouman
+    family-names: Sarwar
+    alias: noumansarwarr
+version: 0.3.0
+license: MIT
+repository-code: "https://github.com/noumansarwarr/interactive-product-demo"
+url: "https://github.com/noumansarwarr/interactive-product-demo"
+keywords:
+  - claude-code
+  - claude-skill
+  - interactive-product-demo
+  - product-demo
+  - hero-animation
+  - react
+  - css-animation
+  - landing-page
+  - video-alternative

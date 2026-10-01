@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+Made the repo easier to find in search engines, AI search, and answer engines. The
+skill itself is unchanged.
+
+- **README opens with a definition.** One plain "Interactive Product Demo is…" sentence,
+  key facts (no runtime dependencies, about 40 KB of source, React 18+), and badges.
+  Section headings now ask the questions people search for, and the first is answered
+  directly beneath it.
+- **FAQ section.** Covers what an interactive product demo is, how it compares with
+  hosted demo platforms, framework support, page speed, ideal length, mobile, and cost.
+- **`llms.txt`** gives LLMs and AI crawlers a plain-text map of the repo.
+- **`CITATION.cff`** adds author and citation metadata, which GitHub shows as
+  "Cite this repository".
+
 ## 0.3.0
 
 Renamed. The skill is **interactive product demo**, and the code now says so — "scene"

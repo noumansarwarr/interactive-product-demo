@@ -1,0 +1,28 @@
+# Interactive Product Demo
+
+> An open-source Claude Code skill that builds landing-page product demos out of live DOM and CSS instead of a video or GIF. It replicates a screen of a React app with the app's own components and fixture data, then animates a scripted cursor and a panning, spotlighting camera through one task. MIT-licensed. Adds about 40 KB of TypeScript and CSS source and no runtime dependencies.
+
+Use it for hero animations, product showcases, feature walkthroughs, animated screenshots, or to replace a screen recording, Loom, or GIF on a marketing page. It requires Claude Code and React 18+ with TypeScript and CSS Modules. The CSS is framework-agnostic, and the hooks can be ported to Vue, Svelte, or vanilla JS.
+
+Install: `git clone https://github.com/noumansarwarr/interactive-product-demo ~/.claude/skills/interactive-product-demo`, then run `/interactive-product-demo` in Claude Code.
+
+## Docs
+
+- [README](https://github.com/noumansarwarr/interactive-product-demo/blob/main/README.md): what it is, install, the five-step workflow, tuning, troubleshooting, FAQ
+- [SKILL.md](https://github.com/noumansarwarr/interactive-product-demo/blob/main/SKILL.md): the workflow Claude follows, the seven invariants, the ship gate
+- [Architecture](https://github.com/noumansarwarr/interactive-product-demo/blob/main/references/architecture.md): layer model, camera math, state derivation, activity gating
+- [Authoring](https://github.com/noumansarwarr/interactive-product-demo/blob/main/references/authoring.md): beat scripts, timing budget (8–15 seconds), cursor legibility
+- [Replica](https://github.com/noumansarwarr/interactive-product-demo/blob/main/references/replica.md): reusing real app components on a marketing page
+- [Pitfalls](https://github.com/noumansarwarr/interactive-product-demo/blob/main/references/pitfalls.md): silent and layout-specific failures
+- [Checklist](https://github.com/noumansarwarr/interactive-product-demo/blob/main/references/checklist.md): pre-ship gate
+
+## Source
+
+- [use-demo-beats.ts](https://github.com/noumansarwarr/interactive-product-demo/blob/main/assets/use-demo-beats.ts): beat engine (travel → press → done) with pause/resume
+- [use-demo-camera.ts](https://github.com/noumansarwarr/interactive-product-demo/blob/main/assets/use-demo-camera.ts): fit/cover, narrow-stage push-in, damped pan, spot markers
+- [use-demo-active.ts](https://github.com/noumansarwarr/interactive-product-demo/blob/main/assets/use-demo-active.ts): runs the demo only while it is on screen and the tab is visible
+- [demo-template.tsx](https://github.com/noumansarwarr/interactive-product-demo/blob/main/assets/demo-template.tsx): a complete wired skeleton
+
+## Optional
+
+- [CHANGELOG](https://github.com/noumansarwarr/interactive-product-demo/blob/main/CHANGELOG.md): changes by release
