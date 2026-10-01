@@ -304,6 +304,14 @@ their embed, and the viewer drives it. This skill writes an auto-playing demo in
 own codebase, so there's no third-party embed, account, or capture step. If you want
 viewers to click through the product themselves, a hosted platform is the better fit.
 
+### How is this different from /brag?
+
+[/brag](https://github.com/latent-spaces/brag) turns a project into a short MP4 launch
+video, with music and share copy, for posting on social media. This skill builds a live
+demo that runs inside your landing page. It ships as code, not a video file, so it
+stays sharp, responsive, and in step with your UI. They work well together: a /brag
+video to announce the product, and an interactive product demo in the hero section.
+
 ### Does it work without React?
 
 The CSS works with any framework. The whole contract between JavaScript and CSS is a
